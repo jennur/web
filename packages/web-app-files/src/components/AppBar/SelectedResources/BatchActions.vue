@@ -85,7 +85,6 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-
 import MixinRoutes from '../../../mixins/routes'
 import MixinDeleteResources from '../../../mixins/deleteResources'
 import { cloneStateObject } from '../../../helpers/store'
@@ -94,92 +93,74 @@ import { checkRoute } from '../../../helpers/route'
 import { shareStatus } from '../../../helpers/shareStatus'
 import { triggerShareAction } from '../../../helpers/share/triggerShareAction'
 import PQueue from 'p-queue'
-
 export default {
   mixins: [MixinRoutes, MixinDeleteResources],
-
   computed: {
     ...mapGetters('Files', ['selectedFiles', 'currentFolder', 'activeFiles']),
-
     emptyTrashbinButtonText() {
       return this.selectedFiles.length < 1
         ? this.$gettext('Empty trash bin')
         : this.$gettext('Delete')
     },
-
     canMove() {
       if (
         !checkRoute(['files-personal', 'files-public-list', 'files-favorites'], this.$route.name)
       ) {
         return false
       }
-
       const moveDisabled = this.selectedFiles.some(resource => {
         return canBeMoved(resource, this.currentFolder.path) === false
       })
       return !moveDisabled
     },
-
     canCopy() {
       if (
         !checkRoute(['files-personal', 'files-public-list', 'files-favorites'], this.$route.name)
       ) {
         return false
       }
-
       if (this.isPublicFilesRoute) {
         return this.currentFolder.canCreate()
       }
-
       return true
     },
-
     canDelete() {
       if (this.isSharedWithMeRoute) {
         return false
       }
-
       if (this.isPublicFilesRoute) {
         return this.currentFolder.canBeDeleted()
       }
-
       const deleteDisabled = this.selectedFiles.some(resource => {
         return !resource.canBeDeleted()
       })
       return !deleteDisabled
     },
-
     canAccept() {
       if (!this.isSharedWithMeRoute) {
         return false
       }
-
       const acceptDisabled = this.selectedFiles.some(resource => {
         return resource.status === shareStatus.accepted
       })
       return !acceptDisabled
     },
-
     canDecline() {
       if (!this.isSharedWithMeRoute) {
         return false
       }
-
       const declineDisabled = this.selectedFiles.some(resource => {
         return resource.status === shareStatus.declined
       })
       return !declineDisabled
     },
-
     displayBulkActions() {
       return this.$route.meta.hasBulkActions && this.selectedFiles.length > 0
     },
-
     isEmpty() {
       return this.activeFiles.length < 1
     }
   },
-
   methods: {
     ...mapActions('Files', ['removeFilesFromTrashbin', 'resetFileSelection', 'setHighlightedFile']),
     ...mapActions(['showMessage']),
@@ -187,9 +168,8 @@ export default {
       'LOAD_FILES',
       'SELECT_RESOURCES',
       'CLEAR_CURRENT_FILES_LIST',
-      'UPDATE_RESOURCE',
+      'UPDATE_RESOURCE'
     ]),
-
     restoreFiles(resources = this.selectedFiles) {
       for (const resource of resources) {
         this.$client.fileTrash
@@ -199,27 +179,26 @@ export default {
             this.showMessage({
               title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
               autoClose: {
-                enabled: true,
-              },
+                enabled: true
+              }
             })
             this.removeFilesFromTrashbin([resource])
           })
-          .catch((error) => {
+          .catch(error => {
             const translated = this.$gettext('Restoration of %{resource} failed')
             this.showMessage({
               title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
               desc: error.message,
               status: 'danger',
               autoClose: {
-                enabled: true,
-              },
+                enabled: true
+              }
             })
           })
       }
       this.resetFileSelection()
       this.setHighlightedFile(null)
     },
-
     emptyTrashbin() {
       this.$client.fileTrash
         .clearTrashBin()
@@ -227,27 +206,25 @@ export default {
           this.showMessage({
             title: this.$gettext('All deleted files were removed'),
             autoClose: {
-              enabled: true,
-            },
+              enabled: true
+            }
           })
           this.removeFilesFromTrashbin(this.activeFiles)
         })
-        .catch((error) => {
+        .catch(error => {
           this.showMessage({
             title: this.$gettext('Could not delete files'),
             desc: error.message,
             status: 'danger',
             autoClose: {
-              enabled: true,
-            },
+              enabled: true
+            }
           })
         })
     },
-
     triggerLocationPicker(action) {
       const resources = cloneStateObject(this.selectedFiles)
       const context = this.isPublicPage ? 'public' : 'private'
-
       this.$router.push({
         name: 'files-location-picker',
         params: {
@@ -262,15 +239,12 @@ export default {
         }
       })
     },
-
     acceptShares() {
       this.triggerShareActions(shareStatus.accepted)
     },
-
     declineShares() {
       this.triggerShareActions(shareStatus.declined)
     },
-
     async triggerShareActions(newShareStatus) {
       const errors = []
       const triggerPromises = []
@@ -295,12 +269,10 @@ export default {
         )
       })
       await Promise.all(triggerPromises)
-
       if (errors.length === 0) {
         this.resetFileSelection()
         return
       }
-
       console.log(errors)
       if (newShareStatus === shareStatus.accepted) {
         this.showMessage({
