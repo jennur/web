@@ -14,7 +14,6 @@ export default {
             if (checkRoute(['files-shared-with-me', 'files-trashbin'], this.$route.name)) {
               return false
             }
-
             return resource.canBeDeleted()
           },
           componentType: 'oc-button',
