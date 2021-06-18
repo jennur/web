@@ -230,7 +230,7 @@ import debounce from 'lodash-es/debounce'
 const visibilityObserver = new VisibilityObserver()
 
 export default {
-  components: { ListLoader, NoContentMessage, ListInfo },
+  components: { ListLoader, NoContentMessage },
 
   mixins: [FileActions, MixinFilesListPositioning, MixinFilesListPagination],
 
