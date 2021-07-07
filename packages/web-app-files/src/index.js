@@ -1,5 +1,6 @@
 import App from './App.vue'
 import Personal from './views/Personal.vue'
+import Projects from './views/Projects.vue'
 import Favorites from './views/Favorites.vue'
 import SharedWithMe from './views/SharedWithMe.vue'
 import SharedWithOthers from './views/SharedWithOthers.vue'
@@ -109,6 +110,14 @@ const navItems = [
     }
   },
   {
+    name: $gettext('Projects'),
+    iconMaterial: 'shared-with-me',
+    route: {
+      name: 'projects',
+      path: `/${appInfo.id}/list/projects`
+    }
+  },
+  {
     name: $gettext('Shared with others'),
     iconMaterial: 'shared-with-others',
     route: {
@@ -142,6 +151,7 @@ const routes = [
     path: '/',
     redirect: { name: 'files-personal' }
   },
+
   {
     name: 'list',
     path: '/list',
@@ -157,6 +167,16 @@ const routes = [
         meta: {
           hasBulkActions: true,
           title: $gettext('All files')
+        }
+      },
+      {
+        path: 'projects/:page?',
+        component: Projects,
+        name: 'projects',
+        meta: {
+          hideFilelistActions: true,
+          hasBulkActions: true,
+          title: $gettext('Projects')
         }
       },
       {
