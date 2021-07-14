@@ -110,14 +110,6 @@ const navItems = [
     }
   },
   {
-    name: $gettext('Projects'),
-    iconMaterial: 'shared-with-me',
-    route: {
-      name: 'projects',
-      path: `/${appInfo.id}/list/projects`
-    }
-  },
-  {
     name: $gettext('Shared with others'),
     iconMaterial: 'shared-with-others',
     route: {
@@ -142,6 +134,14 @@ const navItems = [
     route: {
       name: 'files-trashbin',
       path: `/${appInfo.id}/list/trash-bin`
+    }
+  },
+  {
+    name: $gettext('Projects'),
+    iconMaterial: 'library_books',
+    route: {
+      name: 'projects',
+      path: `/${appInfo.id}/eos/project/`
     }
   }
 ]
@@ -292,6 +292,25 @@ const routes = [
       app: FilesDrop
     },
     meta: { auth: false, title: $gettext('Public file upload') }
+  },
+
+  {
+    name: 'eos',
+    path: '/eos',
+    components: {
+      app: App
+    },
+    children: [
+      {
+        name: 'project',
+        path: 'project',
+        component: Projects,
+        meta: {
+          hasBulkActions: false,
+          title: $gettext('Projects')
+        }
+      }
+    ]
   }
 ]
 
