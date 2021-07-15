@@ -141,7 +141,7 @@ const navItems = [
     iconMaterial: 'library_books',
     route: {
       name: 'projects',
-      path: `/${appInfo.id}/eos/project/`
+      path: `/${appInfo.id}/eos/project`
     }
   }
 ]
@@ -167,16 +167,6 @@ const routes = [
         meta: {
           hasBulkActions: true,
           title: $gettext('All files')
-        }
-      },
-      {
-        path: 'projects/:page?',
-        component: Projects,
-        name: 'projects',
-        meta: {
-          hideFilelistActions: true,
-          hasBulkActions: true,
-          title: $gettext('Projects')
         }
       },
       {
@@ -293,7 +283,6 @@ const routes = [
     },
     meta: { auth: false, title: $gettext('Public file upload') }
   },
-
   {
     name: 'eos',
     path: '/eos',
@@ -303,7 +292,7 @@ const routes = [
     children: [
       {
         name: 'project',
-        path: 'project',
+        path: 'project/:item?',
         component: Projects,
         meta: {
           hasBulkActions: false,
