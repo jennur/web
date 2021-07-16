@@ -26,7 +26,6 @@
           class="files-table"
           :class="{ 'files-table-squashed': isSidebarOpen }"
           :are-previews-displayed="displayPreviews"
-          :are-paths-displayed="true"
           :resources="activeFiles"
           :target-route="targetRoute"
           :highlighted="highlightedFile ? highlightedFile.id : null"
@@ -200,7 +199,6 @@ export default {
               currentFolder: null,
               files: resources
             })
-
           }
           this.loading = false
         })
@@ -212,11 +210,11 @@ export default {
       /* For testing locally if no projects in the backend */
       const recievedResources = [
         {
-          name: '/eos/project/e/example',
+          name: '/e/example',
           permissions: 'admin'
         },
         {
-          name: '/eos/project/f/fdo',
+          name: '/f/fdo',
           permissions: 'writer'
         }
       ]

@@ -295,6 +295,7 @@ const routes = [
         path: 'project/:item?',
         component: Projects,
         meta: {
+          hideFilelistActions: true,
           hasBulkActions: false,
           title: $gettext('Projects')
         }
