@@ -163,44 +163,49 @@ export default {
       visibilityObserver.observe(component.$el, { onEnter: debounced, onExit: debounced.cancel })
     },
 
-    loadResources() {
-      this.loading = false
+    async loadResources() {
+      this.loading = true
       this.CLEAR_CURRENT_FILES_LIST()
       const headers = new Headers()
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
-      fetch('api/v0/projects', {
+      await fetch('api/v0/projects', {
         method: 'GET',
         headers
       })
         .then(response => {
-          response.json()
+          return response.json()
         })
         .then(data => {
           /* Data from the backend */
-          if (data && data.projects & (data.projects.length > 0)) {
-            let resources = data.projects.forEach((p, i) => {
-              p.name = '/' + p.name.charAt(0) + '/' + p.name
-              p.id = i + p.name
-              p.type = 'dir'
-              p.fileInfo = {
-                '{http://owncloud.org/ns}permissions': 'RDNVCK',
-                '{http://owncloud.org/ns}favorite': '0',
-                '{http://owncloud.org/ns}fileid': i + p.name,
-                '{http://owncloud.org/ns}owner-id': 'einstein',
-                '{http://owncloud.org/ns}owner-display-name': 'Albert Einstein',
-                '{DAV:}getetag': '"ac531ba650fd4912447b22fa5d66c600"',
-                '{DAV:}resourcetype': ['{DAV:}collection']
-              }
-              p.tusSupport = {
-                version: ['1.0.0'],
-                extension: ['creation', 'creation-with-upload'],
-                resumable: '1.0.0'
-              }
+          console.log('data', data.projects.length)
+          if (data && data.projects) {
+            console.log('in loop')
+            let resources = []
+            data.projects.forEach((p, i) => {
+              resources.push({
+                name: '/' + p.name.charAt(0) + '/' + p.name,
+                id: i + p.name,
+                type: 'dir',
+                fileInfo: {
+                  '{http://owncloud.org/ns}permissions': 'RDNVCK',
+                  '{http://owncloud.org/ns}favorite': '0',
+                  '{http://owncloud.org/ns}fileid': i + p.name,
+                  '{http://owncloud.org/ns}owner-id': 'einstein',
+                  '{http://owncloud.org/ns}owner-display-name': 'Albert Einstein',
+                  '{DAV:}getetag': '"ac531ba650fd4912447b22fa5d66c600"',
+                  '{DAV:}resourcetype': ['{DAV:}collection']
+                },
+                tusSupport: {
+                  version: ['1.0.0'],
+                  extension: ['creation', 'creation-with-upload'],
+                  resumable: '1.0.0'
+                }
+              })
             })
-
+            console.log(resources)
             resources = resources.map(buildResource)
-
+            console.log('resources before load_files', resources)
             this.LOAD_FILES({
               currentFolder: null,
               files: resources
@@ -208,6 +213,7 @@ export default {
           }
           this.loading = false
         })
+
         .catch(err => {
           console.log(err)
           this.loading = false
