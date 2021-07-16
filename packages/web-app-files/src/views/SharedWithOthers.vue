@@ -97,12 +97,12 @@ export default {
         groupingBy: 'creation',
         showGroupingOptions: true,
         groupingFunctions: {
-          alphabetically: function(row) {
+          'Name alphabetically': function(row) {
             if (!isNaN(row.name.charAt(0))) return '#'
             if (row.name.charAt(0) === '.') return row.name.charAt(1).toLowerCase()
             return row.name.charAt(0).toLowerCase()
           },
-          creation: function(row) {
+          'Shared date/on': function(row) {
             const interval1 = new Date()
             interval1.setDate(interval1.getDate() - 7)
             const interval2 = new Date()
