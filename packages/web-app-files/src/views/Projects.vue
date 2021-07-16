@@ -90,7 +90,6 @@ export default {
       }
     },
     isEmpty() {
-      console.log('project after mapping', this.activeFiles)
       return this.activeFiles.length < 1
     },
 
@@ -167,7 +166,13 @@ export default {
     loadResources() {
       this.loading = false
       this.CLEAR_CURRENT_FILES_LIST()
-      fetch('api/v0/projects')
+      const headers = new Headers()
+      headers.append('Authorization', 'Bearer ' + this.getToken)
+      headers.append('X-Requested-With', 'XMLHttpRequest')
+      fetch('api/v0/projects', {
+        method: 'GET',
+        headers
+      })
         .then(response => {
           response.json()
         })
@@ -238,8 +243,6 @@ export default {
           }
         })
       })
-
-      console.log('project data from api', resources)
       resources = resources.map(buildResource)
       this.LOAD_FILES({
         currentFolder: null,
