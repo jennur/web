@@ -178,8 +178,8 @@ export default {
         })
         .then(data => {
           /* Data from the backend */
-          if (data.length > 0) {
-            let resources = data.forEach((p, i) => {
+          if (data && data.projects & (data.projects.length > 0)) {
+            let resources = data.projects.forEach((p, i) => {
               p.name = '/' + p.name.charAt(0) + '/' + p.name
               p.id = i + p.name
               p.type = 'dir'
