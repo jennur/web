@@ -1,5 +1,6 @@
 import App from './App.vue'
 import Personal from './views/Personal.vue'
+import Projects from './views/Projects.vue'
 import Favorites from './views/Favorites.vue'
 import SharedWithMe from './views/SharedWithMe.vue'
 import SharedWithOthers from './views/SharedWithOthers.vue'
@@ -133,6 +134,14 @@ const navItems = [
     route: {
       name: 'files-trashbin',
       path: `/${appInfo.id}/list/trash-bin`
+    }
+  },
+  {
+    name: $gettext('Projects'),
+    iconMaterial: 'library_books',
+    route: {
+      name: 'projects',
+      path: `/${appInfo.id}/eos/project`
     }
   }
 ]
@@ -272,6 +281,25 @@ const routes = [
       app: FilesDrop
     },
     meta: { auth: false, title: $gettext('Public file upload') }
+  },
+  {
+    name: 'eos',
+    path: '/eos',
+    components: {
+      app: App
+    },
+    children: [
+      {
+        name: 'project',
+        path: 'project/:item?',
+        component: Projects,
+        meta: {
+          hideFilelistActions: true,
+          hasBulkActions: false,
+          title: $gettext('Projects')
+        }
+      }
+    ]
   }
 ]
 
