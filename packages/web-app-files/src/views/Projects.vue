@@ -175,6 +175,7 @@ export default {
           /* Data from the backend */
           if (data.length > 0) {
             let resources = data.forEach((p, i) => {
+              p.name = '/' + p.name.charAt(0) + '/' + p.name
               p.id = i + p.name
               p.type = 'dir'
               p.fileInfo = {
@@ -207,7 +208,7 @@ export default {
           this.loading = false
         })
 
-      /* For testing locally if no projects in the backend */
+      /* For testing locally if no projects in the backend 
       const recievedResources = [
         {
           name: '/e/example',
@@ -243,7 +244,7 @@ export default {
       this.LOAD_FILES({
         currentFolder: null,
         files: resources
-      })
+      }) */
 
       this.loading = false
     }
