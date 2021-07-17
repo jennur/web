@@ -42,7 +42,7 @@
 
 <script>
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
-import { buildResource } from '../helpers/resources'
+import { aggregateResourceShares } from '../helpers/resources'
 
 import FileActions from '../mixins/fileActions'
 import MixinFilesListPositioning from '../mixins/filesListPositioning'
@@ -50,7 +50,6 @@ import MixinFilesListPagination from '../mixins/filesListPagination'
 
 import ListLoader from '../components/FilesList/ListLoader.vue'
 import NoContentMessage from '../components/FilesList/NoContentMessage.vue'
-import ListInfo from '../components/FilesList/ListInfo.vue'
 import { VisibilityObserver } from 'web-pkg/src/observer'
 import { ImageDimension } from '../constants'
 import debounce from 'lodash-es/debounce'
@@ -58,7 +57,7 @@ import debounce from 'lodash-es/debounce'
 const visibilityObserver = new VisibilityObserver()
 
 export default {
-  components: { ListLoader, NoContentMessage, ListInfo },
+  components: { ListLoader, NoContentMessage },
 
   mixins: [FileActions, MixinFilesListPositioning, MixinFilesListPagination],
 
@@ -102,7 +101,7 @@ export default {
     },
 
     targetRoute() {
-      return { name: this.$route.name }
+      return { name: 'files-personal' }
     },
 
     displayPreviews() {
@@ -169,91 +168,71 @@ export default {
       const headers = new Headers()
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
-      await fetch('api/v0/projects', {
+
+      const response = await fetch('api/v0/projects', {
         method: 'GET',
         headers
       })
-        .then(response => {
-          return response.json()
-        })
-        .then(data => {
-          /* Data from the backend */
-          console.log('data', data.projects.length)
-          if (data && data.projects) {
-            console.log('in loop')
-            let resources = []
-            data.projects.forEach((p, i) => {
-              resources.push({
-                name: '/' + p.name.charAt(0) + '/' + p.name,
-                id: i + p.name,
-                type: 'dir',
-                fileInfo: {
-                  '{http://owncloud.org/ns}permissions': 'RDNVCK',
-                  '{http://owncloud.org/ns}favorite': '0',
-                  '{http://owncloud.org/ns}fileid': i + p.name,
-                  '{http://owncloud.org/ns}owner-id': 'einstein',
-                  '{http://owncloud.org/ns}owner-display-name': 'Albert Einstein',
-                  '{DAV:}getetag': '"ac531ba650fd4912447b22fa5d66c600"',
-                  '{DAV:}resourcetype': ['{DAV:}collection']
-                },
-                tusSupport: {
-                  version: ['1.0.0'],
-                  extension: ['creation', 'creation-with-upload'],
-                  resumable: '1.0.0'
-                }
-              })
-            })
-            console.log(resources)
-            resources = resources.map(buildResource)
-            console.log('resources before load_files', resources)
-            this.LOAD_FILES({
-              currentFolder: null,
-              files: resources
-            })
-          }
-          this.loading = false
-        })
+      if (!response.ok) {
+        const message = `An error has occured: ${response.status}`
+        throw new Error(message)
+      }
 
-        .catch(err => {
-          console.log(err)
-          this.loading = false
+      const data = await response.json()
+      console.log('projects', data)
+      const recievedResources = []
+      if (data && data.projects) {
+        data.projects.forEach((p, i) => {
+          recievedResources.push({
+            name: '/' + p.name.charAt(0) + '/' + p.name,
+            id: i + p.name,
+            type: 'dir',
+            file_target: '/eos/project/' + p.name.charAt(0) + '/' + p.name,
+            path: '/eos/project/' + p.name.charAt(0) + '/' + p.name,
+            item_type: 'folder',
+            mimetype: 'httpd/unix-directory',
+            additional_info_file_owner: 'admin@example.org',
+            additional_info_owner: 'admin@example.org',
+            displayname_file_owner: 'Admin',
+            displayname_owner: 'Admin',
+            state: 2
+          })
         })
+      }
 
       /* For testing locally if no projects in the backend 
       const recievedResources = [
         {
+          file_target: '/eos/project/e/example',
           name: '/e/example',
-          permissions: 'admin'
-        },
-        {
-          name: '/f/fdo',
-          permissions: 'writer'
+          permissions: 'admin',
+          path: '/eos/project/e/example',
+          item_type: 'folder',
+          mimetype: 'httpd/unix-directory',
+          additional_info_file_owner: 'admin@example.org',
+          additional_info_owner: 'admin@example.org',
+          displayname_file_owner: 'Admin',
+          displayname_owner: 'Admin',
+          state: 2
         }
-      ]
+      ] */
 
       let resources = []
 
-      recievedResources.forEach((p, i) => {
-        resources.push({
-          id: i + p.name,
-          name: p.name,
-          type: 'dir',
-          fileInfo: {
-            '{http://owncloud.org/ns}permissions': 'RDNVCK',
-            '{http://owncloud.org/ns}fileid': i + p.name,
-            '{http://owncloud.org/ns}owner-id': 'einstein',
-            '{http://owncloud.org/ns}owner-display-name': 'Albert Einstein',
-            '{http://owncloud.org/ns}size': '0',
-            '{DAV:}getlastmodified': 'Tue, 06 Jul 2021 13:46:50 GMT',
-            '{DAV:}resourcetype': ['{DAV:}collection']
-          }
-        })
-      })
-      resources = resources.map(buildResource)
+      if (recievedResources.length) {
+        resources = aggregateResourceShares(
+          recievedResources,
+          true,
+          !this.isOcis,
+          this.configuration.server,
+          this.getToken
+        )
+      }
+
       this.LOAD_FILES({
         currentFolder: null,
         files: resources
-      }) */
+      })
 
       this.loading = false
     }
