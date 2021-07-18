@@ -169,7 +169,7 @@ export default {
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
 
-      const response = await fetch('api/v0/projects', {
+      /*  const response = await fetch('api/v0/projects', {
         method: 'GET',
         headers
       })
@@ -180,7 +180,7 @@ export default {
 
       const data = await response.json()
       console.log('projects', data)
-      const recievedResources = []
+       const recievedResources = []
       if (data && data.projects) {
         data.projects.forEach((p, i) => {
           recievedResources.push({
@@ -200,7 +200,7 @@ export default {
         })
       }
 
-      /* For testing locally if no projects in the backend 
+       For testing locally if no projects in the backend */
       const recievedResources = [
         {
           file_target: '/eos/project/e/example',
@@ -209,13 +209,9 @@ export default {
           path: '/eos/project/e/example',
           item_type: 'folder',
           mimetype: 'httpd/unix-directory',
-          additional_info_file_owner: 'admin@example.org',
-          additional_info_owner: 'admin@example.org',
-          displayname_file_owner: 'Admin',
-          displayname_owner: 'Admin',
           state: 2
         }
-      ] */
+      ]
 
       let resources = []
 
@@ -228,6 +224,13 @@ export default {
           this.getToken
         )
       }
+
+      resources.forEach(r => {
+        delete r.owner
+        delete r.share
+        delete r.status
+        delete r.sdate
+      })
 
       this.LOAD_FILES({
         currentFolder: null,
