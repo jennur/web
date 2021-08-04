@@ -45,7 +45,7 @@ Feature: Versions of a file
 
   @ocis-reva-issue-110
   @skipOnStorage:ceph @files_primary_s3-issue-1
-  Scenario: file versions cannot be seen in the webUI after deleting versions
+  Scenario: file versions cannot be seen on the webUI after deleting versions
     Given user "user0" has uploaded file with content "lorem content" to "lorem-file.txt"
     And user "user0" has uploaded file with content "lorem" to "lorem-file.txt"
     And user "user0" has uploaded file with content "new lorem content" to "lorem-file.txt"
@@ -56,7 +56,7 @@ Feature: Versions of a file
 
   @ocis-reva-issue-110
   @skipOnStorage:ceph @files_primary_s3-issue-155
-  Scenario: file versions cannot be seen in the webUI only for user whose versions is deleted
+  Scenario: file versions cannot be seen on the webUI only for user whose versions is deleted
     Given user "user0" has uploaded file with content "lorem content" to "lorem-file.txt"
     And user "user0" has uploaded file with content "lorem" to "lorem-file.txt"
     And user "Alice" has uploaded file with content "lorem content" to "lorem-file.txt"
@@ -71,7 +71,7 @@ Feature: Versions of a file
 
   @ocis-reva-issue-110
   @skipOnStorage:ceph @files_primary_s3-issue-155
-  Scenario: file versions cannot be seen in the webUI for all users after deleting versions for all users
+  Scenario: file versions cannot be seen on the webUI for all users after deleting versions for all users
     Given user "user0" has uploaded file with content "lorem content" to "/lorem-file.txt"
     And user "user0" has uploaded file with content "lorem" to "/lorem-file.txt"
     And user "Alice" has uploaded file with content "lorem content" to "/lorem-file.txt"
@@ -83,3 +83,14 @@ Feature: Versions of a file
     When the user re-logs in as "Alice" using the webUI
     And the user browses to display the "versions" details of file "lorem-file.txt"
     Then the versions list should contain 0 entries
+
+  @issue-ocis-2319
+  Scenario: change the file content of a received shared file
+    Given user "Brian" has created file "lorem.txt"
+    And user "Brian" has shared file "lorem.txt" with user "Alice" with "all" permissions
+    And user "Alice" has accepted the share "lorem.txt" offered by user "Brian"
+    And user "Alice" has logged in using the webUI
+    And the user has opened folder "Shares" using the webUI
+    When the user uploads overwriting file "lorem.txt" using the webUI
+    Then the versions list should contain 1 entries 
+    

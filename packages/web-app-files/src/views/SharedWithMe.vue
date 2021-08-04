@@ -31,7 +31,7 @@
             :header-position="headerPosition"
             :grouping-settings="groupingSettingsPending"
           >
-            <template v-slot:status="{ resource }">
+            <template #status="{ resource }">
               <div
                 :key="resource.id + resource.status"
                 class="uk-text-nowrap uk-flex uk-flex-middle uk-flex-right"
@@ -115,7 +115,7 @@
           @showDetails="setHighlightedFile"
           @fileClick="$_fileActions_triggerDefaultAction"
         >
-          <template v-slot:status="{ resource }">
+          <template #status="{ resource }">
             <div
               :key="resource.id + resource.status"
               class="uk-text-nowrap uk-flex uk-flex-middle uk-flex-right"
@@ -185,7 +185,7 @@
           :grouping-settings="groupingSettingsAccepted"
           @fileClick="$_fileActions_triggerDefaultAction"
         >
-          <template v-slot:status="{ resource }">
+          <template #status="{ resource }">
             <div
               :key="resource.id + resource.status"
               class="uk-text-nowrap uk-flex uk-flex-middle uk-flex-right"
@@ -205,6 +205,18 @@
               />
             </div>
           </template>
+          <template #contextMenu="{ resource }">
+            <context-actions :item="resource" />
+          </template>
+          <template #footer>
+            <pagination />
+            <list-info
+              v-if="activeFiles.length > 0"
+              class="uk-width-1-1 oc-my-s"
+              :files="totalFilesCount.files"
+              :folders="totalFilesCount.folders"
+            />
+          </template>
         </oc-table-files>
       </div>
     </template>
@@ -218,28 +230,22 @@ import { aggregateResourceShares, buildSharedResource } from '../helpers/resourc
 import FileActions from '../mixins/fileActions'
 import MixinFilesListPositioning from '../mixins/filesListPositioning'
 import MixinFilesListPagination from '../mixins/filesListPagination'
-
 import ListLoader from '../components/FilesList/ListLoader.vue'
 import NoContentMessage from '../components/FilesList/NoContentMessage.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
 import { VisibilityObserver } from 'web-pkg/src/observer'
 import { ImageDimension, ImageType } from '../constants'
 import debounce from 'lodash-es/debounce'
-
 const visibilityObserver = new VisibilityObserver()
-
 export default {
   components: { ListLoader, NoContentMessage, ListInfo },
-
   mixins: [FileActions, MixinFilesListPositioning, MixinFilesListPagination],
-
   data: () => ({
     loading: true,
     shareStatus,
     showDeclined: false,
     showAllPending: false
   }),
-
   computed: {
     ...mapState(['app']),
     ...mapState('Files', ['currentPage', 'files']),
@@ -324,24 +330,19 @@ export default {
     isEmpty() {
       return this.activeFiles.length < 1
     },
-
     isSidebarOpen() {
       return this.highlightedFile !== null
     },
-
     uploadProgressVisible() {
       return this.inProgress.length > 0
     },
-
     targetRoute() {
       return { name: 'files-personal' }
     },
-
     displayThumbnails() {
       return !this.configuration.options.disablePreviews
     }
   },
-
   watch: {
     uploadProgressVisible() {
       this.adjustTableHeaderPosition()
@@ -351,20 +352,16 @@ export default {
       immediate: true
     }
   },
-
   created() {
     this.loadResources()
     window.onresize = this.adjustTableHeaderPosition
   },
-
   mounted() {
     this.adjustTableHeaderPosition()
   },
-
   beforeDestroy() {
     visibilityObserver.disconnect()
   },
-
   methods: {
     ...mapActions('Files', ['setHighlightedFile', 'loadIndicators', 'loadPreview', 'loadAvatars']),
     ...mapActions(['showMessage']),
@@ -374,16 +371,13 @@ export default {
       'CLEAR_CURRENT_FILES_LIST',
       'UPDATE_RESOURCE'
     ]),
-
     rowMounted(resource, component) {
       const debounced = debounce(({ unobserve }) => {
         unobserve()
         this.loadAvatars({ resource })
-
         if (!this.displayThumbnails) {
           return
         }
-
         this.loadPreview({
           resource,
           isPublic: false,
@@ -391,7 +385,6 @@ export default {
           type: ImageType.Thumbnail
         })
       }, 250)
-
       visibilityObserver.observe(component.$el, {
         onEnter: debounced,
         onExit: debounced.cancel
@@ -403,16 +396,13 @@ export default {
     async loadResources() {
       this.loading = true
       this.CLEAR_CURRENT_FILES_LIST()
-
       let resources = await this.$client.requests.ocs({
         service: 'apps/files_sharing',
         action: '/api/v1/shares?format=json&shared_with_me=true&state=all&include_tags=false',
         method: 'GET'
       })
-
       resources = await resources.json()
       resources = resources.ocs.data
-
       if (resources.length) {
         resources = aggregateResourceShares(
           resources,
@@ -422,12 +412,9 @@ export default {
           this.getToken
         )
       }
-
       this.LOAD_FILES({ currentFolder: null, files: resources })
-
       this.loading = false
     },
-
     getShareStatusText(status) {
       switch (status) {
         case shareStatus.accepted:
@@ -439,7 +426,6 @@ export default {
           return this.$gettext('Pending')
       }
     },
-
     async triggerShareAction(resource, type) {
       try {
         // exec share action
@@ -448,7 +434,6 @@ export default {
           action: `api/v1/shares/pending/${resource.share.id}`,
           method: type
         })
-
         // exit on failure
         if (response.status !== 200) {
           throw new Error(response.statusText)
@@ -458,7 +443,6 @@ export default {
         // oc10
         if (parseInt(response.headers.get('content-length')) > 0) {
           response = await response.json()
-
           if (response.ocs.data.length > 0) {
             share = response.ocs.data[0]
           }
@@ -467,7 +451,6 @@ export default {
           const { shareInfo } = await this.$client.shares.getShare(resource.share.id)
           share = shareInfo
         }
-
         // update share in store
         if (share) {
           const sharedResource = await buildSharedResource(
