@@ -12,7 +12,7 @@
         <oc-icon name="restore" />
         <translate>Restore</translate>
       </oc-button>
-      <oc-button
+      <!--<oc-button
         v-if="!isEmpty"
         id="delete-selected-btn"
         key="delete-btn"
@@ -21,7 +21,7 @@
       >
         <oc-icon name="delete" />
         {{ emptyTrashbinButtonText }}
-      </oc-button>
+      </oc-button>-->
     </template>
     <oc-grid v-if="displayBulkActions" gutter="small">
       <div v-if="canCopy">
@@ -187,7 +187,7 @@ export default {
       'LOAD_FILES',
       'SELECT_RESOURCES',
       'CLEAR_CURRENT_FILES_LIST',
-      'UPDATE_RESOURCE',
+      'UPDATE_RESOURCE'
     ]),
 
     restoreFiles(resources = this.selectedFiles) {
@@ -199,20 +199,20 @@ export default {
             this.showMessage({
               title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
               autoClose: {
-                enabled: true,
-              },
+                enabled: true
+              }
             })
             this.removeFilesFromTrashbin([resource])
           })
-          .catch((error) => {
+          .catch(error => {
             const translated = this.$gettext('Restoration of %{resource} failed')
             this.showMessage({
               title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
               desc: error.message,
               status: 'danger',
               autoClose: {
-                enabled: true,
-              },
+                enabled: true
+              }
             })
           })
       }
@@ -227,19 +227,19 @@ export default {
           this.showMessage({
             title: this.$gettext('All deleted files were removed'),
             autoClose: {
-              enabled: true,
-            },
+              enabled: true
+            }
           })
           this.removeFilesFromTrashbin(this.activeFiles)
         })
-        .catch((error) => {
+        .catch(error => {
           this.showMessage({
             title: this.$gettext('Could not delete files'),
             desc: error.message,
             status: 'danger',
             autoClose: {
-              enabled: true,
-            },
+              enabled: true
+            }
           })
         })
     },
