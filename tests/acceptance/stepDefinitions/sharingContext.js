@@ -43,7 +43,7 @@ const userSharesFileOrFolderWithUserOrGroup = async function(
 
   return api
     .sharingDialog()
-    .shareWithUserOrGroup(sharee, shareWithGroup, role, permissions, remote, null, quickAction)
+    .shareWithUserOrGroup(sharee, shareWithGroup, role, permissions, remote, null)
 }
 
 /**
@@ -589,11 +589,11 @@ Given('the administrator has excluded group {string} from receiving shares', asy
   }
 })
 
-When('the user opens the share creation dialog in the webUI', function() {
+When('the user opens the share creation dialog on the webUI', function() {
   return client.page.FilesPageElement.SharingDialog.collaboratorsDialog().clickCreateShare()
 })
 
-When('the user cancels the share creation dialog in the webUI', function() {
+When('the user cancels the share creation dialog on the webUI', function() {
   return client.page.FilesPageElement.sharingDialog().clickCancel()
 })
 
@@ -688,15 +688,12 @@ Then('it should not be possible to share file/folder {string} using the webUI', 
   const state = await filesList.isSharingButtonPresent(resource)
   assert.ok(!state, `Error: Sharing button for resource ${resource} is not in disabled state`)
   await filesList.openSideBar(resource)
-  const linkItemState = await appSideBar.isLinksAccordionItemPresent()
-  assert.ok(
-    !linkItemState,
-    `Error: Sidebar 'Links' accordion item for resource ${resource} is present`
-  )
+  const linkItemState = await appSideBar.isLinksPanelSelectPresent()
+  assert.ok(!linkItemState, `Error: Sidebar 'Links' panel for resource ${resource} is present`)
   const collaboratorsItemState = await appSideBar.isCollaboratorsAccordionItemPresent()
   assert.ok(
     !collaboratorsItemState,
-    `Error: Sidebar 'People' accordion item for resource ${resource} is present`
+    `Error: Sidebar 'People' panel for resource ${resource} is present`
   )
 })
 
@@ -952,10 +949,10 @@ Then('user {string} should be listed as {string} in the collaborators list on th
 })
 
 Then(
-  'the share {string} shared with user {string} should have no expiration information displayed on the WebUI',
+  'the share {string} shared with user {string} should have no expiration information displayed on the webUI',
   async function(item, user) {
     await client.page.FilesPageElement.filesList().clickRow(item)
-    await client.page.FilesPageElement.appSideBar().selectAccordionItem('people')
+    await client.page.FilesPageElement.appSideBar().activatePanel('people')
     const elementID = await client.page.FilesPageElement.SharingDialog.collaboratorsDialog().getCollaboratorExpirationInfo(
       user
     )
@@ -968,10 +965,10 @@ Then(
 )
 
 Then(
-  'the expiration information displayed on the WebUI of share {string} shared with user {string} should be {string} or {string}',
+  'the expiration information displayed on the webUI of share {string} shared with user {string} should be {string} or {string}',
   async function(item, user, information1, information2) {
     await client.page.FilesPageElement.filesList().clickRow(item)
-    await client.page.FilesPageElement.appSideBar().selectAccordionItem('people')
+    await client.page.FilesPageElement.appSideBar().activatePanel('people')
     const actualInfo = await client.page.FilesPageElement.SharingDialog.collaboratorsDialog().getCollaboratorExpirationInfo(
       user
     )
@@ -1135,13 +1132,13 @@ Then('the collaborators list for file/folder/resource {string} should be empty',
   )
 })
 
-Then('the expiration date field should be marked as required on the WebUI', async function() {
+Then('the expiration date field should be marked as required on the webUI', async function() {
   await client.page.FilesPageElement.sharingDialog().waitForElementVisible(
     '@requiredLabelInCollaboratorsExpirationDate'
   )
 })
 
-Then('the expiration date for {string} should be disabled on the WebUI', async function(
+Then('the expiration date for {string} should be disabled on the webUI', async function(
   expiration
 ) {
   const dateToSet = calculateDate(expiration)
@@ -1384,7 +1381,7 @@ Then('it should not be possible to save the pending share on the webUI', async f
 })
 
 When(
-  'the user shares resource {string} with user {string} using the quick action in the webUI',
+  'the user shares resource {string} with user {string} using the quick action on the webUI',
   function(resource, user) {
     return userSharesFileOrFolderWithUserOrGroup(
       resource,
