@@ -7,13 +7,8 @@
     >
       <li v-for="(action, index) in appActions" :key="`app-${index}`" class="oc-py-xs">
         <div :class="['oc-text-bold', action.class]" @click="getLink(action)">
-          <oc-icon :name="image" size="medium" />
-          <span class="oc-files-actions-sidebar-action-label">{{ 'Open in ' + action }}</span>
-          <span
-            v-if="action.opensInNewWindow"
-            class="oc-invisible-sr"
-            v-text="$gettext('(Opens in new window)')"
-          />
+          <img :src="action.icon" :alt="action.name" class="oc-icon-m" />
+          <span class="oc-files-actions-sidebar-action-label">{{ 'Open in ' + action.name }}</span>
         </div>
       </li>
     </ul>
@@ -78,70 +73,89 @@ export default {
   },
 
   methods: {
-    async getLink(appName) {
-      console.log(appName)
-      let data = {
-        file_id: this.highlightedFile.fileId || this.highlightedFile.id,
-        app_name: appName
-      }
+    async getLink(app) {
+      // const route = this.$router.resolve({ path: '/files/list/apps' })
 
-      const headers = new Headers()
-      headers.append('Authorization', 'Bearer ' + this.getToken)
-      headers.append('X-Requested-With', 'XMLHttpRequest')
-
-      const response = await fetch('/app/open', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(data)
+      localStorage.app_params = JSON.stringify({
+        app,
+        file_id: this.highlightedFile.fileId || this.highlightedFile.id
       })
-      if (!response.ok) {
-        const message = `An error has occured: ${response.status}`
-        throw new Error(message)
-      }
+      const routeData = this.$router.resolve({
+        path: '/files/list/apps'
+      })
 
-      data = await response.json()
-      console.log('got post response', data, data['app-url'])
-      if (data && data['app-url']) window.open(data['app-url'], '_blank').focus()
+      window.open(routeData.href, '_blank')
     },
 
-    async loadApps() {
+    loadApps() {
       let data
 
-      const response = await fetch('/app/list', {
-        method: 'GET'
-      })
-      if (!response.ok) {
-        const message = `An error has occured: ${response.status}`
-        throw new Error(message)
-      }
-
-      data = await response.json()
-      console.log('get data', data)
-
-      /* if (!data) {
+      if (!data) {
         data = {
           mime_types: {
             'application/msword': {
-              app_provider_name: ['Collabora', 'Microsoft Office 365']
+              app_providers: [
+                {
+                  address: 'localhost:19000',
+                  name: 'Collabora',
+                  icon: 'https://www.collaboraoffice.com/wp-content/uploads/2019/01/CP-icon.png'
+                },
+                {
+                  address: 'localhost:18000',
+                  name: 'MS Office 365',
+                  icon:
+                    'https://upload.wikimedia.org/wikipedia/commons/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg'
+                }
+              ]
             },
-            'application/octet-stream': {
-              app_provider_name: ['Collabora', 'Microsoft Office 365']
-            },
+
             'application/pdf': {
-              app_provider_name: ['Microsoft Office 365']
+              app_providers: [
+                {
+                  address: 'localhost:18000',
+                  name: 'MS Office 365',
+                  icon:
+                    'https://upload.wikimedia.org/wikipedia/commons/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg'
+                }
+              ]
             },
             'application/rtf': {
-              app_provider_name: ['Collabora', 'Microsoft Office 365']
+              app_providers: [
+                {
+                  address: 'localhost:19000',
+                  name: 'Collabora',
+                  icon: 'https://www.collaboraoffice.com/wp-content/uploads/2019/01/CP-icon.png'
+                },
+                {
+                  address: 'localhost:18000',
+                  name: 'MS Office 365',
+                  icon:
+                    'https://upload.wikimedia.org/wikipedia/commons/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg'
+                }
+              ]
             },
             'application/doc': {
-              app_provider_name: ['Collabora', 'Microsoft Office 365']
+              app_providers: [
+                {
+                  address: 'localhost:19000',
+                  name: 'Collabora',
+                  icon: 'https://www.collaboraoffice.com/wp-content/uploads/2019/01/CP-icon.png'
+                },
+                {
+                  address: 'localhost:18000',
+                  name: 'MS Office 365',
+                  icon:
+                    'https://upload.wikimedia.org/wikipedia/commons/5/5f/Microsoft_Office_logo_%282019%E2%80%93present%29.svg'
+                }
+              ]
             }
           }
-        }} */
+        }
+      }
 
       const appList = []
       for (const [key, value] of Object.entries(data.mime_types)) {
-        appList.push({ extension: key.split('/')[1], apps: value.app_provider_name })
+        appList.push({ extension: key.split('/')[1], apps: value.app_providers })
       }
       return appList
     },
@@ -166,6 +180,15 @@ export default {
 </script>
 
 <style lang="scss">
+.popup {
+  position: absolute;
+  width: 800px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+}
+
 #oc-files-actions-sidebar {
   > li a,
   > li a:hover {
