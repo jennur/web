@@ -9,6 +9,7 @@
         <div :class="['oc-text-bold']" @click="getLink(app)">
           <img :src="app.icon" :alt="app.name" class="oc-icon-m" />
           <span class="oc-files-actions-sidebar-action-label">{{ 'Open in ' + app.name }}</span>
+
         </div>
       </li>
     </ul>
@@ -70,6 +71,7 @@ export default {
     this.loadApps()
   },
   methods: {
+
     async loadApps() {
       let data
       /* const response = await fetch('/app/list', {
@@ -100,7 +102,6 @@ export default {
 
       const mimetype = a[0].split('<d:getcontenttype>')[1].split('</d:getcontenttype>')[0]
       console.log('mimetype', mimetype)
-
       if (!data) {
         data = {
           'mime-types': {
@@ -148,6 +149,7 @@ export default {
                 }
               ]
             },
+
             'application/pdf': {
               app_providers: [
                 {
