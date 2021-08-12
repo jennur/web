@@ -81,17 +81,23 @@ export default {
       })
       window.open(routeData.href, '_blank')
     },
+
     async loadApps() {
       let data
-      /* const response = await fetch('/app/list', {
-        method: 'GET'
-      })
-      if (!response.ok) {
-        const message = `An error has occured: ${response.status}`
-        throw new Error(message)
-      }
-      data = await response.json()
-      console.log('get data', data) */
+
+      if (!localStorage.mimetypes) {
+        const response = await fetch('/app/list', {
+          method: 'GET'
+        })
+        if (!response.ok) {
+          this.dataList = []
+          const message = `An error has occured: ${response.status}`
+          throw new Error(message)
+        }
+        data = await response.json()
+        console.log('get data', data)
+        localStorage.mimetypes = JSON.stringify(data)
+      } else data = JSON.parse(localStorage.mimetypes)
 
       const url = 'remote.php/dav/files/' + this.user.id + this.highlightedFile.path
 
@@ -111,7 +117,7 @@ export default {
 
       const mimetype = a[0].split('<d:getcontenttype>')[1].split('</d:getcontenttype>')[0]
       console.log('mimetype', mimetype)
-      if (!data) {
+      /* if (!data) {
         data = {
           'mime-types': {
             'application/compressed-markdown': {
@@ -595,7 +601,7 @@ export default {
             }
           }
         }
-      }
+      } */
 
       if (data['mime-types'][mimetype] && data['mime-types'][mimetype].app_providers)
         this.appList = data['mime-types'][mimetype].app_providers
