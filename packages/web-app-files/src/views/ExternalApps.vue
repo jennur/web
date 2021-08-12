@@ -24,19 +24,14 @@ export default {
     try {
       this.params = JSON.parse(localStorage.app_params)
 
-      const params = {
-        file_id: this.params.file_id,
-        app_name: this.params.app.name
-      }
-
       const headers = new Headers()
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
 
-      const response = await fetch('/app/open', {
+      const url = '/app/open?file_id=' + this.params.file_id + '&app_name=' + this.params.app.name
+      const response = await fetch(url, {
         method: 'POST',
-        headers,
-        body: JSON.stringify(params)
+        headers
       })
       if (!response.ok) {
         const message = `An error has occured: ${response.status}`
