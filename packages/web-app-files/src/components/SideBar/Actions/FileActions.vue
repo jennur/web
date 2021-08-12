@@ -111,7 +111,6 @@ export default {
 
       const mimetype = a[0].split('<d:getcontenttype>')[1].split('</d:getcontenttype>')[0]
       console.log('mimetype', mimetype)
-
       if (!data) {
         data = {
           'mime-types': {
@@ -159,6 +158,7 @@ export default {
                 }
               ]
             },
+
             'application/pdf': {
               app_providers: [
                 {
