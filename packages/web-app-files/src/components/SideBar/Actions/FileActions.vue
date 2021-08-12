@@ -5,11 +5,10 @@
       id="oc-files-actions-sidebar"
       class="uk-list oc-mt-s"
     >
-      <li v-for="(app, index) in appList" :key="`app-${index}`" class="oc-py-xs">
+      <li v-for="(app, index) in appList" :key="`app-${index}`" class="oc-py-xs pointer">
         <div :class="['oc-text-bold']" @click="getLink(app)">
           <img :src="app.icon" :alt="app.name" class="oc-icon-m" />
           <span class="oc-files-actions-sidebar-action-label">{{ 'Open in ' + app.name }}</span>
-
         </div>
       </li>
     </ul>
@@ -71,7 +70,17 @@ export default {
     this.loadApps()
   },
   methods: {
-
+    getLink(app) {
+      // const route = this.$router.resolve({ path: '/files/list/apps' })
+      localStorage.app_params = JSON.stringify({
+        app,
+        file_id: this.highlightedFile.fileId || this.highlightedFile.id
+      })
+      const routeData = this.$router.resolve({
+        path: '/files/list/apps'
+      })
+      window.open(routeData.href, '_blank')
+    },
     async loadApps() {
       let data
       /* const response = await fetch('/app/list', {
@@ -613,6 +622,9 @@ export default {
 </script>
 
 <style lang="scss">
+.pointer {
+  cursor: pointer;
+}
 .oc-files-actions-sidebar-actions {
   > li a,
   > li a:hover {
