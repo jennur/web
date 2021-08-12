@@ -2,7 +2,11 @@
   <main>
     <div>
       test iframe {{ params.app.name }}
-      <iframe />
+      <iframe
+        v-if="params.app.name === 'CodiMD' && app_url && method === 'GET'"
+        class="app-iframe-codimd"
+        :src="app_url"
+      />
     </div>
   </main>
 </template>
@@ -12,7 +16,10 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'ExternalApps',
   data: () => ({
-    params: {}
+    params: {},
+    app_url: '',
+    method: '',
+    form_parameters: {}
   }),
   computed: {
     ...mapGetters(['getToken'])
@@ -40,6 +47,10 @@ export default {
 
       const data = await response.json()
 
+      if (data.app_url) this.app_url = data.app_url
+      if (data.method) this.method = data.method
+      if (data.form_parameters) this.form_parameters = data.form_parameters
+
       console.log('post data', data)
     } catch (error) {
       console.log(error)
@@ -52,6 +63,13 @@ export default {
 }
 </script>
 <style scoped>
+.app-iframe-codimd {
+  width: 100vw;
+  height: 98vh;
+}
+.web-nav-sidebar {
+  display: none !important;
+}
 #body {
 }
 </style>
