@@ -11,7 +11,7 @@
       <div
         v-if="params.app.name === 'Collabora' && app_url && method === 'POST' && form_parameters"
       >
-        <form action="iframe.php" target="app-iframe-collabora" method="post">
+        <form :action="app_url" target="app-iframe-collabora" method="post">
           <input type="submit" :value="form_parameters" />
           <input name="access_token" :value="form_parameters.access_token" type="hidden" />
           <input name="access_token_ttl" :value="form_parameters.access_token_ttl" type="hidden" />
@@ -80,7 +80,5 @@ export default {
 }
 #web-nav-sidebar {
   display: none !important;
-}
-#body {
 }
 </style>
