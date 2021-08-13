@@ -7,6 +7,17 @@
         class="app-iframe-codimd"
         :src="app_url"
       />
+
+      <div
+        v-if="params.app.name === 'Collabora' && app_url && method === 'POST' && form_parameters"
+      >
+        <form action="iframe.php" target="app-iframe-collabora" method="post">
+          <input type="submit" :value="form_parameters" />
+          <input name="access_token" :value="form_parameters.access_token" type="hidden" />
+          <input name="access_token_ttl" :value="form_parameters.access_token_ttl" type="hidden" />
+        </form>
+        <iframe class="app-iframe-collabora" name="app-iframe-collabora" :src="app_url" />
+      </div>
     </div>
   </main>
 </template>
@@ -67,7 +78,7 @@ export default {
   width: 100vw;
   height: 98vh;
 }
-.web-nav-sidebar {
+#web-nav-sidebar {
   display: none !important;
 }
 #body {
