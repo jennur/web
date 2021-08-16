@@ -8,6 +8,7 @@
           <div v-for="(item, key, index) in form_parameters" :key="index">
             <input :name="key" :value="item" type="hidden" />
           </div>
+          <input ref="submitting" type="submit" :value="form_parameters" />
         </form>
       </div>
       <span id="frameholder"></span>
@@ -33,7 +34,9 @@ export default {
   watch: {
     form_parameters(val, oldVal) {
       if (val && this.method === 'POST') {
-        const frameholder = document.getElementById('frameholder')
+        const elem = this.$refs.submitting
+        elem.click()
+        /* const frameholder = document.getElementById('frameholder')
         const frame = document.createElement('iframe')
         frame.name = 'app-iframe'
         frame.id = 'app-iframe'
@@ -50,7 +53,7 @@ export default {
           'sandbox',
           'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox'
         )
-        frameholder.appendChild(frame)
+        frameholder.appendChild(frame) */
       }
     }
   },
@@ -99,13 +102,9 @@ export default {
 }
 </script>
 <style scoped>
+#frameholder,
 .app-iframe {
   width: 100vw;
   height: 98vh;
-}
-#files-view-options-btn,
-#web-nav-sidebar,
-.oc-sidebar {
-  display: none !important;
 }
 </style>
