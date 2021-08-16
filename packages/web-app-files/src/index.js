@@ -198,12 +198,12 @@ const routes = [
       },
       {
         name: 'apps',
-        path: 'apps',
+        path: 'apps/:app/:file_id',
         component: externalApps,
         meta: {
           hideFilelistActions: true,
           hasBulkActions: false,
-          title: $gettext('External Apps')
+          title: $gettext('External App')
         }
       },
       {

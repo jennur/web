@@ -1,22 +1,16 @@
 <template>
   <main>
     <div>
-      test iframe {{ params.app.name }}
-      <iframe
-        v-if="params.app.name === 'CodiMD' && app_url && method === 'GET'"
-        class="app-iframe-codimd"
-        :src="app_url"
-      />
+      test id {{ $route.params.file_id }} test app {{ $route.params.app }}
+      <iframe v-if="app_url && method === 'GET'" class="app-iframe" :src="app_url" />
 
-      <div
-        v-if="params.app.name === 'Collabora' && app_url && method === 'POST' && form_parameters"
-      >
-        <form :action="app_url" target="app-iframe-collabora" method="post">
-          <input type="submit" :value="form_parameters" />
-          <input name="access_token" :value="form_parameters.access_token" type="hidden" />
-          <input name="access_token_ttl" :value="form_parameters.access_token_ttl" type="hidden" />
+      <div v-if="app_url && method === 'POST' && form_parameters">
+        <form :action="app_url" target="app-iframe" method="post">
+          <div v-for="(item, key, index) in form_parameters" :key="index">
+            <input :name="item" :value="item" type="hidden" />
+          </div>
         </form>
-        <iframe class="app-iframe-collabora" name="app-iframe-collabora" :src="app_url" />
+        <span id="frameholder"></span>
       </div>
     </div>
   </main>
@@ -27,7 +21,8 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'ExternalApps',
   data: () => ({
-    params: {},
+    app: '',
+    file_id: '',
     app_url: '',
     method: '',
     form_parameters: {}
@@ -36,17 +31,23 @@ export default {
     ...mapGetters(['getToken'])
   },
 
+  mounted() {
+    document.title = this.$route.params.app
+  },
+
   async created() {
+    console.log('route', this.$route.params)
     // this.test = this.$router.params.userId
 
     try {
-      this.params = JSON.parse(localStorage.app_params)
+      this.app = this.$route.params.app
+      this.file_id = this.$route.params.file_id
 
       const headers = new Headers()
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
 
-      const url = '/app/open?file_id=' + this.params.file_id + '&app_name=' + this.params.app.name
+      const url = '/app/open?file_id=' + this.file_id + '&app_name=' + this.app
       const response = await fetch(url, {
         method: 'POST',
         headers
@@ -63,6 +64,26 @@ export default {
       if (data.form_parameters) this.form_parameters = data.form_parameters
 
       console.log('post data', data)
+      if (this.method === 'POST') {
+        const frameholder = document.getElementById('frameholder')
+        const frame = document.createElement('iframe')
+        frame.name = 'app-iframe'
+        frame.id = 'app-iframe'
+
+        // The title should be set for accessibility
+        frame.title = 'App Frame'
+
+        // This attribute allows true fullscreen mode in slideshow view
+        // when using PowerPoint's 'view' action.
+        frame.setAttribute('allowfullscreen', 'true')
+
+        // The sandbox attribute is needed to allow automatic redirection to the O365 sign-in page in the business user flow
+        frame.setAttribute(
+          'sandbox',
+          'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox'
+        )
+        frameholder.appendChild(frame)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -74,11 +95,13 @@ export default {
 }
 </script>
 <style scoped>
-.app-iframe-codimd {
+.app-iframe {
   width: 100vw;
   height: 98vh;
 }
-#web-nav-sidebar {
+#files-view-options-btn,
+#web-nav-sidebar,
+.oc-sidebar {
   display: none !important;
 }
 </style>

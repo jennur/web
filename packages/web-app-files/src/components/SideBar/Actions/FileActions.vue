@@ -65,26 +65,23 @@ export default {
       this.loadApps()
     }
   },
-
   created() {
     this.loadApps()
   },
   methods: {
     getLink(app) {
       // const route = this.$router.resolve({ path: '/files/list/apps' })
-      localStorage.app_params = JSON.stringify({
-        app,
-        file_id: this.highlightedFile.fileId || this.highlightedFile.id
-      })
+
+      const path =
+        '/files/list/apps/' + app.name + '/' + this.highlightedFile.fileId ||
+        this.highlightedFile.id
       const routeData = this.$router.resolve({
-        path: '/files/list/apps'
+        path: path
       })
       window.open(routeData.href, '_blank')
     },
-
     async loadApps() {
       let data
-
       if (!localStorage.mimetypes) {
         const response = await fetch('/app/list', {
           method: 'GET'
@@ -98,23 +95,17 @@ export default {
         console.log('get data', data)
         localStorage.mimetypes = JSON.stringify(data)
       } else data = JSON.parse(localStorage.mimetypes)
-
       const url = 'remote.php/dav/files/' + this.user.id + this.highlightedFile.path
-
       const headers = new Headers()
       headers.append('Authorization', 'Bearer ' + this.getToken)
       headers.append('X-Requested-With', 'XMLHttpRequest')
-
       const resp = await fetch(url, { method: 'PROPFIND', headers })
       if (!resp.ok) {
         const message = `An error has occured: ${resp.status}`
         throw new Error(message)
       }
-
       const prop = await resp.text()
-
       const a = prop.match(new RegExp('<d:getcontenttype>' + '(.*)' + '</d:getcontenttype>'))
-
       const mimetype = a[0].split('<d:getcontenttype>')[1].split('</d:getcontenttype>')[0]
       console.log('mimetype', mimetype)
       /* if (!data) {
@@ -164,7 +155,6 @@ export default {
                 }
               ]
             },
-
             'application/pdf': {
               app_providers: [
                 {
@@ -602,7 +592,6 @@ export default {
           }
         }
       } */
-
       if (data['mime-types'][mimetype] && data['mime-types'][mimetype].app_providers)
         this.appList = data['mime-types'][mimetype].app_providers
       else this.appList = []
