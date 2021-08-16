@@ -238,7 +238,8 @@ export default {
     },
 
     isSidebarVisible() {
-      if (this.sidebarNavItems.length === 0) {
+      console.log('route', this.$route)
+      if (this.sidebarNavItems.length === 0 || this.$route.fullPath.includes('/files/list/apps/')) {
         return false
       }
       return this.windowWidth >= 1200 || this.appNavigationVisible
