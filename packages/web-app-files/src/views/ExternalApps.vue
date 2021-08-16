@@ -1,7 +1,7 @@
 <template>
   <main>
     <div>
-      <iframe v-if="app_url && method === 'GET'" class="app-iframe" :src="app_url" />
+      <iframe class="app-iframe" :src="app_url" />
 
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
@@ -11,7 +11,7 @@
           <input ref="submitting" type="submit" :value="form_parameters" />
         </form>
       </div>
-      <span id="frameholder"></span>
+      <iframe class="app-iframe" :src="app_url" />
     </div>
   </main>
 </template>
@@ -31,12 +31,12 @@ export default {
     ...mapGetters(['getToken'])
   },
 
-  watch: {
+  /* watch: {
     form_parameters(val, oldVal) {
       if (val && this.method === 'POST') {
         const elem = this.$refs.submitting
         elem.click()
-        /* const frameholder = document.getElementById('frameholder')
+        const frameholder = document.getElementById('frameholder')
         const frame = document.createElement('iframe')
         frame.name = 'app-iframe'
         frame.id = 'app-iframe'
@@ -53,8 +53,16 @@ export default {
           'sandbox',
           'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox'
         )
-        frameholder.appendChild(frame) */
+        frameholder.appendChild(frame) 
       }
+    }
+  }, */
+
+  updated() {
+    if (this.method === 'POST' && this.form_parameters) {
+      console.loo('initiate submitting')
+      const elem = this.$refs.submitting
+      elem.click()
     }
   },
 
