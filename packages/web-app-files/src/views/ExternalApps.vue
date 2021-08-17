@@ -1,7 +1,9 @@
 <template>
   <main>
     <div>
-      <iframe class="app-iframe" :src="app_url" />
+      <div v-if="app_url && method === 'GET'">
+        <iframe class="app-iframe" :src="app_url" />
+      </div>
 
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
@@ -10,8 +12,8 @@
           </div>
           <input ref="submitting" type="submit" :value="form_parameters" />
         </form>
+        <iframe class="app-iframe" />
       </div>
-      <iframe class="app-iframe" :src="app_url" />
     </div>
   </main>
 </template>
@@ -58,13 +60,13 @@ export default {
     }
   }, */
 
-  updated() {
+  /* updated() {
     if (this.method === 'POST' && this.form_parameters) {
       console.loo('initiate submitting')
       const elem = this.$refs.submitting
       elem.click()
     }
-  },
+  }, */
 
   mounted() {
     document.title = this.$route.params.app
