@@ -4,7 +4,6 @@
       <div v-if="app_url && method === 'GET'">
         <iframe class="app-iframe" :src="app_url" />
       </div>
-
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
           <div v-for="(item, key, index) in form_parameters" :key="index">
