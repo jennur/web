@@ -5,7 +5,7 @@
 
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
-          <input type="submit" :value="form_parameters" />
+          <input ref="subm" type="submit" :value="form_parameters" type="hidden" />
           <div v-for="(item, key, index) in form_parameters" :key="index">
             <input :name="key" :value="item" type="hidden" />
           </div>
@@ -31,40 +31,12 @@ export default {
     ...mapGetters(['getToken'])
   },
 
-  /* watch: {
-    form_parameters(val, oldVal) {
-      if (val && this.method === 'POST') {
-        const elem = this.$refs.submitting
-        elem.click()
-        const frameholder = document.getElementById('frameholder')
-        const frame = document.createElement('iframe')
-        frame.name = 'app-iframe'
-        frame.id = 'app-iframe'
-
-        // The title should be set for accessibility
-        frame.title = 'App Frame'
-
-        // This attribute allows true fullscreen mode in slideshow view
-        // when using PowerPoint's 'view' action.
-        frame.setAttribute('allowfullscreen', 'true')
-
-        // The sandbox attribute is needed to allow automatic redirection to the O365 sign-in page in the business user flow
-        frame.setAttribute(
-          'sandbox',
-          'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox'
-        )
-        frameholder.appendChild(frame) 
-      }
-    }
-  }, */
-
-  /* updated() {
+  updated() {
     if (this.method === 'POST' && this.form_parameters) {
-      console.loo('initiate submitting')
-      const elem = this.$refs.submitting
-      elem.click()
+      console.log('initiate click', this.$refs.subm.click())
+      this.$refs.subm.click()
     }
-  }, */
+  },
 
   mounted() {
     document.title = this.$route.params.app
