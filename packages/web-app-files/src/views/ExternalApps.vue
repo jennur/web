@@ -2,7 +2,6 @@
   <main>
     <div>
       <iframe v-if="app_url && method === 'GET'" class="app-iframe" :src="app_url" />
-
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
           <input ref="subm" type="submit" :value="form_parameters" type="hidden" />
