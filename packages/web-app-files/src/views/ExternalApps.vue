@@ -4,12 +4,12 @@
       <iframe v-if="app_url && method === 'GET'" class="app-iframe" :src="app_url" />
       <div v-if="app_url && method === 'POST' && form_parameters">
         <form :action="app_url" target="app-iframe" method="post">
-          <input ref="subm" type="submit" :value="form_parameters" type="hidden" />
+          <input ref="subm" type="submit" :value="form_parameters" class="hide" />
           <div v-for="(item, key, index) in form_parameters" :key="index">
             <input :name="key" :value="item" type="hidden" />
           </div>
         </form>
-        <iframe class="app-iframe" name="app-iframe" :src="app_url" />
+        <iframe class="app-iframe" name="app-iframe" />
       </div>
     </div>
   </main>
@@ -81,6 +81,9 @@ export default {
 }
 </script>
 <style scoped>
+.hide {
+  display: none;
+}
 #frameholder,
 .app-iframe {
   width: 100vw;
