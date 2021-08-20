@@ -194,15 +194,9 @@ const routes = [
           hideFilelistActions: true,
           hasBulkActions: false,
           title: $gettext('External App')
-        name: 'project',
-        path: 'projects/:page?',
-        component: Projects,
-        meta: {
-          hideFilelistActions: true,
-          hasBulkActions: false,
-          title: $gettext('Projects')
         }
       },
+
       {
         name: 'favorites',
         path: 'favorites/:page?',
