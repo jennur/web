@@ -299,6 +299,7 @@ export default {
   },
   mounted() {
     const _this = this
+
     if (localStorage.getItem('feedback') !== 'true' && !this.feedbackModal) {
       setTimeout(function() {
         _this.toggleFeedbackModal()
@@ -315,6 +316,7 @@ export default {
   },
   methods: {
     ...mapActions(['initAuth', 'fetchNotifications', 'deleteMessage', 'createModal', 'hideModal']),
+
     /// // Feedback
     toggleFeedbackModal() {
       if (!this.feedbackModal) {
@@ -330,6 +332,7 @@ export default {
           onCancel: this.cancelFeedbackModal,
           onConfirm: this.openFeedbackDoc
         }
+
         this.createModal(modal)
         this.feedbackModal = !this.feedbackModal
       } else {

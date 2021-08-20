@@ -83,6 +83,9 @@ export function buildResource(resource) {
     },
     isReceivedShare: function() {
       return this.permissions.indexOf('S') >= 0
+    },
+    canDeny: function() {
+      return this.permissions.indexOf('Z') >= 0
     }
   }
   return result
@@ -293,7 +296,7 @@ export function buildCollaboratorShare(s, file, allowSharePerm) {
     case shareTypes.remote:
     // fall through
     case shareTypes.group: // group share
-      share.role = bitmaskToRole(s.permissions, file.type === 'folder', allowSharePerm)
+      share.role = bitmaskToRole(s.permissions, file.type === 'folder', allowSharePerm, s.permissions & permissionsBitmask.deny)
       share.permissions = s.permissions
       // FIXME: SDK is returning empty object for additional info when empty
       share.collaborator = {
