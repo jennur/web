@@ -196,7 +196,16 @@ const routes = [
           title: $gettext('External App')
         }
       },
-
+      {
+        name: 'project',
+        path: 'projects/:page?',
+        component: Projects,
+        meta: {
+          hideFilelistActions: true,
+          hasBulkActions: false,
+          title: $gettext('Projects')
+        }
+      },
       {
         name: 'favorites',
         path: 'favorites/:page?',
@@ -335,3 +344,4 @@ export default {
     bus.emit('app.search.register.provider', Registry.sdkSearch)
   }
 }
+
