@@ -12,7 +12,7 @@
         <oc-icon name="restore" />
         <translate>Restore</translate>
       </oc-button>
-      <oc-button
+      <!--<oc-button
         v-if="!isEmpty"
         id="delete-selected-btn"
         key="delete-btn"
@@ -21,7 +21,7 @@
       >
         <oc-icon name="delete" />
         {{ emptyTrashbinButtonText }}
-      </oc-button>
+      </oc-button>-->
     </template>
     <oc-grid v-if="displayBulkActions" gutter="small">
       <div v-if="canCopy">
@@ -183,7 +183,12 @@ export default {
   methods: {
     ...mapActions('Files', ['removeFilesFromTrashbin', 'resetFileSelection', 'setHighlightedFile']),
     ...mapActions(['showMessage']),
-    ...mapMutations('Files', ['UPDATE_RESOURCE']),
+    ...mapMutations('Files', [
+      'LOAD_FILES',
+      'SELECT_RESOURCES',
+      'CLEAR_CURRENT_FILES_LIST',
+      'UPDATE_RESOURCE'
+    ]),
 
     restoreFiles(resources = this.selectedFiles) {
       for (const resource of resources) {
@@ -192,7 +197,10 @@ export default {
           .then(() => {
             const translated = this.$gettext('%{resource} was restored successfully')
             this.showMessage({
-              title: this.$gettextInterpolate(translated, { resource: resource.name }, true)
+              title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
+              autoClose: {
+                enabled: true
+              }
             })
             this.removeFilesFromTrashbin([resource])
           })
@@ -201,7 +209,10 @@ export default {
             this.showMessage({
               title: this.$gettextInterpolate(translated, { resource: resource.name }, true),
               desc: error.message,
-              status: 'danger'
+              status: 'danger',
+              autoClose: {
+                enabled: true
+              }
             })
           })
       }
@@ -214,7 +225,10 @@ export default {
         .clearTrashBin()
         .then(() => {
           this.showMessage({
-            title: this.$gettext('All deleted files were removed')
+            title: this.$gettext('All deleted files were removed'),
+            autoClose: {
+              enabled: true
+            }
           })
           this.removeFilesFromTrashbin(this.activeFiles)
         })
@@ -222,7 +236,10 @@ export default {
           this.showMessage({
             title: this.$gettext('Could not delete files'),
             desc: error.message,
-            status: 'danger'
+            status: 'danger',
+            autoClose: {
+              enabled: true
+            }
           })
         })
     },

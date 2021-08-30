@@ -1,6 +1,7 @@
 import App from './App.vue'
 import Personal from './views/Personal.vue'
 import externalApps from './views/ExternalApps.vue'
+import Projects from './views/Projects.vue'
 import Favorites from './views/Favorites.vue'
 import SharedWithMe from './views/SharedWithMe.vue'
 import SharedWithOthers from './views/SharedWithOthers.vue'
@@ -152,6 +153,14 @@ const navItems = [
       name: 'files-trashbin',
       path: `/${appInfo.id}/list/trash-bin`
     }
+  },
+  {
+    name: $gettext('Projects'),
+    iconMaterial: 'library_books',
+    route: {
+      name: 'projects',
+      path: `/${appInfo.id}/list/projects`
+    }
   }
 ]
 
@@ -185,6 +194,13 @@ const routes = [
           hideFilelistActions: true,
           hasBulkActions: false,
           title: $gettext('External App')
+        name: 'project',
+        path: 'projects/:page?',
+        component: Projects,
+        meta: {
+          hideFilelistActions: true,
+          hasBulkActions: false,
+          title: $gettext('Projects')
         }
       },
       {
