@@ -1,5 +1,6 @@
 import App from './App.vue'
 import Personal from './views/Personal.vue'
+import externalApps from './views/ExternalApps.vue'
 import Projects from './views/Projects.vue'
 import Favorites from './views/Favorites.vue'
 import SharedWithMe from './views/SharedWithMe.vue'
@@ -186,6 +187,16 @@ const routes = [
         }
       },
       {
+        name: 'apps',
+        path: 'apps/:app/:file_id',
+        component: externalApps,
+        meta: {
+          hideFilelistActions: true,
+          hasBulkActions: false,
+          title: $gettext('External App')
+        }
+      },
+      {
         name: 'project',
         path: 'projects/:page?',
         component: Projects,
@@ -333,3 +344,4 @@ export default {
     bus.emit('app.search.register.provider', Registry.sdkSearch)
   }
 }
+
